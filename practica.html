@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Mostrar Pokémon por Tipo</title>
+        <style>
+        #pokemonList {
+            list-style-type: none;
+        }
+        .pokemon-stats {
+            margin-top: 10px;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>Buscar Pokémon por Tipo</h1>
+        <select id="pokemonType" onchange="getPokemonByType()">
+        <option value="fire">Fire</option>
+        <option value="water">Water</option>
+        <option value="grass">Grass</option>
+        <!-- Agrega más opciones según necesites -->
+        </select>
+
+        <ul id="pokemonList"></ul>
+
+        <script>
+        async function getPokemonByType() {
+            const type = document.getElementById("pokemonType").value;
+            const url = `https://pokeapi.co/api/v2/type/${type}/`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const pokemonList = data.pokemon;
+
+            const pokemonListElement = document.getElementById("pokemonList");
+            pokemonListElement.innerHTML = ""; // Limpiar la lista anterior
+
+            for (const p of pokemonList) {
+            const pokemonDetails = await fetch(p.pokemon.url);
+            const pokemonData = await pokemonDetails.json();
+
+            const listItem = document.createElement("li");
+            listItem.textContent = pokemonData.name;
+
+            const statsDiv = document.createElement("div");
+            statsDiv.classList.add("pokemon-stats");
+
+            pokemonData.stats.forEach((stat) => {
+                const statItem = document.createElement("p");
+                statItem.textContent = `${stat.stat.name}: ${stat.base_stat}`;
+                statsDiv.appendChild(statItem);
+            });
+
+            listItem.appendChild(statsDiv);
+            pokemonListElement.appendChild(listItem);
+            }
+        }
+        </script>
+    </body>
+</html>
